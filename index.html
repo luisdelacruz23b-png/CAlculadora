@@ -1,187 +1,161 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Calculadora Pro</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Web Unificada</title>
+    <style>
+        /* --- ESTILOS CSS --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-<style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:'Segoe UI',sans-serif;
-}
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #0d1117; /* Fondo estilo modo oscuro de GitHub */
+        }
 
-body{
-    background:linear-gradient(135deg,#0f172a,#1e293b);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
-}
+        .calculator {
+            background-color: #161b22;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            width: 320px;
+        }
 
-.calculator{
-    width:360px;
-    background:#1e293b;
-    border-radius:20px;
-    padding:20px;
-    box-shadow:0 10px 30px rgba(0,0,0,.5);
-}
+        #display {
+            width: 100%;
+            height: 60px;
+            background-color: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 1.8rem;
+            text-align: right;
+            padding: 10px;
+            margin-bottom: 20px;
+            outline: none;
+        }
 
-.display{
-    margin-bottom:20px;
-}
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
 
-#history{
-    color:#94a3b8;
-    text-align:right;
-    min-height:25px;
-    margin-bottom:5px;
-    font-size:0.9rem;
-}
+        button {
+            height: 50px;
+            border: none;
+            border-radius: 8px;
+            background-color: #21262d;
+            color: #c9d1d9;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
 
-#screen{
-    width:100%;
-    height:80px;
-    background:#0f172a;
-    border:none;
-    border-radius:12px;
-    color:white;
-    text-align:right;
-    padding:15px;
-    font-size:2rem;
-    outline:none;
-}
+        button:hover {
+            background-color: #30363d;
+        }
 
-.buttons{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:10px;
-}
+        /* Colores especiales para destacar botones */
+        .btn-operator {
+            background-color: #1f6feb;
+            color: white;
+        }
 
-button{
-    height:65px;
-    border:none;
-    border-radius:12px;
-    font-size:1.3rem;
-    cursor:pointer;
-    background:#334155;
-    color:white;
-    transition:.2s;
-}
+        .btn-operator:hover {
+            background-color: #388bfd;
+        }
 
-button:hover{
-    transform:translateY(-2px);
-    opacity:.9;
-}
+        .btn-clear {
+            background-color: #da3633;
+            color: white;
+        }
 
-.operator{
-    background:#f59e0b;
-}
+        .btn-clear:hover {
+            background-color: #f85149;
+        }
 
-.equal{
-    background:#10b981;
-}
+        .btn-equal {
+            grid-row: span 2;
+            height: 110px;
+            background-color: #238636;
+            color: white;
+        }
 
-.zero{
-    grid-column:span 2;
-}
-</style>
+        .btn-equal:hover {
+            background-color: #2ea043;
+        }
+
+        .btn-zero {
+            grid-column: span 2;
+        }
+    </style>
 </head>
-
 <body>
 
-<div class="calculator">
+    <div class="calculator">
+        <input type="text" id="display" readonly>
+        
+        <div class="buttons">
+            <button onclick="clearDisplay()" class="btn-clear">C</button>
+            <button onclick="appendValue('/')" class="btn-operator">/</button>
+            <button onclick="appendValue('*')" class="btn-operator">*</button>
+            <button onclick="deleteLast()" class="btn-delete">⌫</button>
 
-    <div class="display">
-        <div id="history"></div>
-        <input type="text" id="screen" readonly>
+            <button onclick="appendValue('7')">7</button>
+            <button onclick="appendValue('8')">8</button>
+            <button onclick="appendValue('9')">9</button>
+            <button onclick="appendValue('-')" class="btn-operator">-</button>
+
+            <button onclick="appendValue('4')">4</button>
+            <button onclick="appendValue('5')">5</button>
+            <button onclick="appendValue('6')">6</button>
+            <button onclick="appendValue('+')" class="btn-operator">+</button>
+
+            <button onclick="appendValue('1')">1</button>
+            <button onclick="appendValue('2')">2</button>
+            <button onclick="appendValue('3')">3</button>
+            <button onclick="calculate()" class="btn-equal">=</button>
+
+            <button onclick="appendValue('0')" class="btn-zero">0</button>
+            <button onclick="appendValue('.')">.</button>
+        </div>
     </div>
 
-    <div class="buttons">
-        <button class="operator" onclick="clearScreen()">AC</button>
-        <button class="operator" onclick="deleteLast()">⌫</button>
-        <button class="operator" onclick="append('%')">%</button>
-        <button class="operator" onclick="append('/')">÷</button>
+    <script>
+        const display = document.getElementById('display');
 
-        <button onclick="append('7')">7</button>
-        <button onclick="append('8')">8</button>
-        <button onclick="append('9')">9</button>
-        <button class="operator" onclick="append('*')">×</button>
+        function appendValue(value) {
+            display.value += value;
+        }
 
-        <button onclick="append('4')">4</button>
-        <button onclick="append('5')">5</button>
-        <button onclick="append('6')">6</button>
-        <button class="operator" onclick="append('-')">−</button>
+        function clearDisplay() {
+            display.value = '';
+        }
 
-        <button onclick="append('1')">1</button>
-        <button onclick="append('2')">2</button>
-        <button onclick="append('3')">3</button>
-        <button class="operator" onclick="append('+')">+</button>
+        function deleteLast() {
+            display.value = display.value.slice(0, -1);
+        }
 
-        <button class="zero" onclick="append('0')">0</button>
-        <button onclick="append('.')">.</button>
-        <button class="equal" onclick="calculate()">=</button>
-    </div>
-
-</div>
-
-<script>
-const screen = document.getElementById("screen");
-const historyDisplay = document.getElementById("history");
-
-function append(value){
-    screen.value += value;
-}
-
-function clearScreen(){
-    screen.value = "";
-    historyDisplay.textContent = "";
-}
-
-function deleteLast(){
-    screen.value = screen.value.slice(0,-1);
-}
-
-function calculate(){
-    try{
-        let expression = screen.value.replace(/%/g,"/100");
-
-        historyDisplay.textContent = screen.value;
-
-        const result = Function(
-            '"use strict"; return (' + expression + ')'
-        )();
-
-        screen.value = result;
-    }
-    catch{
-        screen.value = "Error";
-    }
-}
-
-document.addEventListener("keydown",(e)=>{
-
-    const allowed = "0123456789+-*/.%";
-
-    if(allowed.includes(e.key)){
-        append(e.key);
-    }
-
-    if(e.key === "Enter"){
-        calculate();
-    }
-
-    if(e.key === "Backspace"){
-        deleteLast();
-    }
-
-    if(e.key === "Escape"){
-        clearScreen();
-    }
-});
-</script>
-
+        function calculate() {
+            try {
+                if (display.value !== '') {
+                    // Evalúa la cadena matemática introducida en la pantalla
+                    display.value = eval(display.value);
+                }
+            } catch (error) {
+                display.value = 'Error';
+                setTimeout(clearDisplay, 1500);
+            }
+        }
+    </script>
 </body>
 </html>
